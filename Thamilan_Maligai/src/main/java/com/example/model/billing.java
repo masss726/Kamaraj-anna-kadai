@@ -14,5 +14,6 @@ public class billing implements Serializable{
 	private int rate;
 	private int Quantity;
 	
+	
 
 }

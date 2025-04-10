@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>தமிழன் மாளிகை - Add / Update Product</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #ffffff);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-container {
+            width: 90%;
+            max-width: 500px;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .store-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #d35400;
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccd6dd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            transition: border 0.2s ease-in-out;
+        }
+
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .add-btn {
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        .add-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .update-btn {
+            background-color: #27ae60;
+            color: #fff;
+        }
+
+        .update-btn:hover {
+            background-color: #219150;
+        }
+
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 20px;
+            }
+
+            .store-title {
+                font-size: 18px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <div class="store-title">தமிழன் மாளிகை - Product Adding</div>
+    <form th:action="@{/saveProduct}" th:object="${product}" method="post">
+
+        <label>Product Name</label>
+        <input type="text" placeholder="Enter product name" required />
+
+        <label>Quantity</label>
+        <input type="number" min="1" placeholder="Enter quantity" required />
+
+        <label>Price (₹)</label>
+        <input type="number" step="0.01" min="0" placeholder="Enter price" required />
+
+        <button type="submit" class="btn add-btn">Add Product</button>
+    </form>
+     <a href="/updateProducts"><button type="submit" class="btn update-btn">Update Product</button></a>
+     
+</div>
+</body>
+</html>

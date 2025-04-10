@@ -29,6 +29,12 @@ public class MainController {
 		return "billing";
 		
 	}
+	
+	@GetMapping("/addProducts")
+	public String addProducts() {
+		return "addProducts";
+		
+	}
 
 
 	
