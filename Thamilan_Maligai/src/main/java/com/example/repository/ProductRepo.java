@@ -1,10 +1,10 @@
 package com.example.repository;
 
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import com.example.model.addProduct;
 
+import com.example.model.Products;
 @Repository
-public interface addProductRepo extends JpaRepository<addProduct, Integer> {
+public interface ProductRepo extends JpaRepository<Products, Integer> {
+
 }

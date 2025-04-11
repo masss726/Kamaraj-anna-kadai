@@ -2,6 +2,7 @@ package com.example.MasilaMainController;
 
 import java.math.BigInteger;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
@@ -51,9 +52,12 @@ public class MainController {
     @PostMapping("/addingProducts")
     public String addingProducts(HttpServletRequest req, Model m) {
     	
-        String P_Name = req.getParameter("ProductName");
-        int P_Price = Integer.parseInt(req.getParameter("price"));
-        int P_Quantity = Integer.parseInt(req.getParameter("productQty"));
+        String P_Name = req.getParameter("productName");
+        int P_Price = Integer.parseInt(req.getParameter("productPrice"));
+        int P_Quantity = Integer.parseInt(req.getParameter("productQuantity"));
+        String costomername=req.getParameter("customerName");
+        String mobile1=req.getParameter("customerMobile");
+        int mobile=Integer.parseInt(mobile1);
         System.out.println("name :" + P_Name + ", Price :" + P_Price + " , Quantity :" + P_Quantity);
         
         ap.setProductName(P_Name);
