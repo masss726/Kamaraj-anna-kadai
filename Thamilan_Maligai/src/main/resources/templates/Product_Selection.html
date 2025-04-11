@@ -8,7 +8,7 @@
     <style>
         body {
             background: linear-gradient(to right, #e3f2fd, #ffffff);
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Comic Sans MS', cursive;
         }
 
         .billing-card {
@@ -23,10 +23,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
-        }
-
-        .top-bar h3 {
-            color: #1565c0;
+            flex-wrap: wrap;
         }
 
         .btn-add-product {
@@ -39,44 +36,48 @@
         }
 
         label {
-            font-weight: 500;
+            font-weight: bold;
         }
 
         .form-control:focus {
             box-shadow: 0 0 0 0.2rem rgba(21, 101, 192, 0.25);
         }
 
-        .cart-list {
-            margin-top: 2rem;
-        }
-
-        .cart-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #0d6efd;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-        }
-
-        .cart-item {
-            background-color: #f9f9f9;
-            border: 1px solid #d6d6d6;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            font-family: 'Comic Sans MS', cursive, sans-serif;
+        .cart-table {
+            margin-top: 20px;
             font-weight: bold;
-            color: #333;
+            font-size: 16px;
         }
 
-        .btn-cart {
-            background-color: #007bff;
+        .cart-table th {
+            background-color: #1565c0;
             color: white;
-            width: 100%;
         }
 
-        .btn-cart:hover {
-            background-color: #0056b3;
+        .final-total {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        @media (max-width: 576px) {
+            .top-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .top-bar h3 {
+                text-align: center;
+                margin-bottom: 10px;
+            }
+
+            .cart-table {
+                font-size: 14px;
+            }
+
+            .final-total {
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -85,10 +86,17 @@
     <div class="billing-card">
         <div class="top-bar">
             <h3>🛒 Thamilan Maligai Billing</h3>
-            <a href="/addProducts"><button class="btn btn-add-product">➕ Add Product</button></a>
+            <a href="/addProducts">
+                <button class="btn btn-add-product">➕ Add Product</button>
+            </a>
         </div>
 
-        <form id="billingForm">
+        <!-- Search Box -->
+        <div class="mb-3">
+            <input type="text" class="form-control" id="searchBox" placeholder="🔍 Search Product...">
+        </div>
+
+        <form action="/GoBilling" method="post">
             <div class="row g-3 mb-4">
                 <div class="col-md-6">
                     <label for="customerName" class="form-label">👤 Customer Name</label>
@@ -103,33 +111,57 @@
             <div class="row g-3 mb-4">
                 <div class="col-md-4">
                     <label for="productName" class="form-label">📦 Product Name</label>
-                    <select class="form-select" id="productName" name="productName" required>
+                    <select class="form-select product-select" id="productName" name="productName" required>
                         <option selected disabled>-- Select Product --</option>
-                        <option th:each="p : ${products}" th:value="${p.productName}"
-                                th:data-price="${p.price}" th:text="${p.productName + ' - ₹' + p.price}">
+                        <option th:each="p : ${products}"
+                                th:value="${p.productName}"
+                                th:data-price="${p.price}"
+                                th:text="${p.productName + ' - ₹' + p.price}">
                         </option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <label for="productPrice" class="form-label">💰 Price</label>
-                    <input type="number" class="form-control" id="productPrice" required>
+                    <input type="number" class="form-control rate-input" id="productPrice" name="productPrice" required>
                 </div>
                 <div class="col-md-2">
                     <label for="productQuantity" class="form-label">🔢 Quantity</label>
-                    <input type="number" class="form-control" id="productQuantity" required>
+                    <input type="number" class="form-control quantity-input" id="productQuantity" name="productQuantity" required>
                 </div>
                 <div class="col-md-2">
                     <label for="totalPrice" class="form-label">🧮 Total</label>
-                    <input type="text" class="form-control" id="totalPrice" readonly>
+                    <input type="text" class="form-control total-input" id="totalPrice" name="totalPrice" readonly>
                 </div>
-                <div class="col-md-2 d-grid align-items-end">
-                    <button type="button" class="btn btn-cart" onclick="addToCart()">🛒 Add to Cart</button>
+                <div class="col-md-2 d-grid">
+                    <label class="form-label invisible">Add</label>
+                    <button type="button" class="btn btn-primary" onclick="addToCart()">🛒 Add to Cart</button>
                 </div>
             </div>
 
-            <div class="cart-list">
-                <div class="cart-title">🧺 Cart Items</div>
-                <div id="cartItems"></div>
+            <!-- Cart Table -->
+            <div class="table-responsive cart-table">
+                <table class="table table-bordered text-center">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Product</th>
+                        <th>Price (₹)</th>
+                        <th>Qty</th>
+                        <th>Total (₹)</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody id="cartBody">
+                    <tr><td colspan="6" class="text-muted">No items in cart.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Final Total -->
+            <div class="row mt-3">
+                <div class="col-md-6 offset-md-6 text-end final-total">
+                    🧾 Final Total: ₹<span id="grandTotal">0.00</span>
+                </div>
             </div>
 
             <div class="d-grid mt-4">
@@ -140,66 +172,92 @@
 </div>
 
 <script>
+    const cart = [];
+
     function updateTotal() {
         const rate = parseFloat(document.getElementById('productPrice').value) || 0;
         const qty = parseInt(document.getElementById('productQuantity').value) || 0;
-        document.getElementById('totalPrice').value = '₹' + (rate * qty).toFixed(2);
+        document.getElementById('totalPrice').value = (rate * qty).toFixed(2);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        const rateInput = document.getElementById('productPrice');
-        const qtyInput = document.getElementById('productQuantity');
         const productSelect = document.getElementById('productName');
+        const priceInput = document.getElementById('productPrice');
+        const qtyInput = document.getElementById('productQuantity');
+        const searchBox = document.getElementById('searchBox');
 
         productSelect.addEventListener('change', function () {
             const price = this.options[this.selectedIndex].getAttribute('data-price');
             if (price) {
-                rateInput.value = price;
+                priceInput.value = price;
                 updateTotal();
             }
         });
 
-        rateInput.addEventListener('input', updateTotal);
+        priceInput.addEventListener('input', updateTotal);
         qtyInput.addEventListener('input', updateTotal);
+
+        // Search filter
+        searchBox.addEventListener('input', function () {
+            const filter = this.value.toLowerCase();
+            const options = productSelect.querySelectorAll('option');
+            options.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                option.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
     });
 
-    const cartItems = [];
-
     function addToCart() {
-        const product = document.getElementById('productName');
+        const name = document.getElementById('productName').value;
         const price = parseFloat(document.getElementById('productPrice').value);
-        const qty = parseInt(document.getElementById('productQuantity').value);
-        const total = price * qty;
+        const quantity = parseInt(document.getElementById('productQuantity').value);
+        const total = price * quantity;
 
-        if (!product.value || !price || !qty) {
-            alert("Please select a product and enter valid price & quantity.");
+        if (!name || isNaN(price) || isNaN(quantity) || quantity <= 0) {
+            alert("Please fill in all product details correctly.");
             return;
         }
 
-        const item = {
-            name: product.value,
-            price: price,
-            quantity: qty,
-            total: total
-        };
-
-        cartItems.push(item);
+        cart.push({ name, price, quantity, total });
         renderCart();
+
+        // Reset input fields
+        document.getElementById('productName').value = '';
+        document.getElementById('productPrice').value = '';
+        document.getElementById('productQuantity').value = '';
+        document.getElementById('totalPrice').value = '';
     }
 
     function renderCart() {
-        const container = document.getElementById('cartItems');
-        container.innerHTML = "";
+        const cartBody = document.getElementById('cartBody');
+        cartBody.innerHTML = '';
+        let grandTotal = 0;
 
-        cartItems.forEach((item, index) => {
-            const div = document.createElement('div');
-            div.className = "cart-item";
-            div.innerHTML = `
-                <div>${index + 1}. 🛍️ <strong>${item.name}</strong></div>
-                <div>💰 ₹${item.price} × ${item.quantity} = <span style="color: #28a745;">₹${item.total.toFixed(2)}</span></div>
+        cart.forEach((item, index) => {
+            grandTotal += item.total;
+            cartBody.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${item.name}</td>
+                    <td>₹${item.price}</td>
+                    <td>${item.quantity}</td>
+                    <td>₹${item.total.toFixed(2)}</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="removeItem(${index})">🗑️</button></td>
+                </tr>
             `;
-            container.appendChild(div);
         });
+
+        if (cart.length === 0) {
+            cartBody.innerHTML = '<tr><td colspan="6" class="text-muted">No items in cart.</td></tr>';
+        }
+
+        document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
+    }
+
+    function removeItem(index) {
+        cart.splice(index, 1);
+        renderCart();
     }
 </script>
 </body>
