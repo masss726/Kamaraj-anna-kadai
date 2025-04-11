@@ -10,33 +10,73 @@
             background: linear-gradient(to right, #e3f2fd, #ffffff);
             font-family: 'Segoe UI', sans-serif;
         }
+
         .billing-card {
             border-radius: 1.2rem;
             background-color: #ffffff;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
             padding: 2rem;
         }
+
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
         }
+
         .top-bar h3 {
             color: #1565c0;
         }
+
         .btn-add-product {
             background-color: #ff7043;
             color: white;
         }
+
         .btn-add-product:hover {
             background-color: #f4511e;
         }
+
         label {
             font-weight: 500;
         }
+
         .form-control:focus {
             box-shadow: 0 0 0 0.2rem rgba(21, 101, 192, 0.25);
+        }
+
+        .cart-list {
+            margin-top: 2rem;
+        }
+
+        .cart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0d6efd;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        .cart-item {
+            background-color: #f9f9f9;
+            border: 1px solid #d6d6d6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .btn-cart {
+            background-color: #007bff;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-cart:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -45,12 +85,10 @@
     <div class="billing-card">
         <div class="top-bar">
             <h3>🛒 Thamilan Maligai Billing</h3>
-            <a href="/addProducts">
-                <button class="btn btn-add-product">➕ Add Product</button>
-            </a>
+            <a href="/addProducts"><button class="btn btn-add-product">➕ Add Product</button></a>
         </div>
 
-        <form action="/GoBilling" method="post">
+        <form id="billingForm">
             <div class="row g-3 mb-4">
                 <div class="col-md-6">
                     <label for="customerName" class="form-label">👤 Customer Name</label>
@@ -65,26 +103,33 @@
             <div class="row g-3 mb-4">
                 <div class="col-md-4">
                     <label for="productName" class="form-label">📦 Product Name</label>
-                    <select class="form-select product-select" id="productName" name="productName" required
-                            th:each="p : ${products}"
-                            th:value="${p.name}"
-                            th:data-price="${p.price}"
-                            th:text="${p.name + ' - ₹' + p.price}">
+                    <select class="form-select" id="productName" name="productName" required>
                         <option selected disabled>-- Select Product --</option>
+                        <option th:each="p : ${products}" th:value="${p.productName}"
+                                th:data-price="${p.price}" th:text="${p.productName + ' - ₹' + p.price}">
+                        </option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <label for="productPrice" class="form-label">💰 Price</label>
-                    <input type="number" class="form-control rate-input" id="productPrice" name="productPrice" required>
+                    <input type="number" class="form-control" id="productPrice" required>
                 </div>
                 <div class="col-md-2">
                     <label for="productQuantity" class="form-label">🔢 Quantity</label>
-                    <input type="number" class="form-control quantity-input" id="productQuantity" name="productQuantity" required>
+                    <input type="number" class="form-control" id="productQuantity" required>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <label for="totalPrice" class="form-label">🧮 Total</label>
-                    <input type="text" class="form-control total-input" id="totalPrice" name="totalPrice" readonly>
+                    <input type="text" class="form-control" id="totalPrice" readonly>
                 </div>
+                <div class="col-md-2 d-grid align-items-end">
+                    <button type="button" class="btn btn-cart" onclick="addToCart()">🛒 Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="cart-list">
+                <div class="cart-title">🧺 Cart Items</div>
+                <div id="cartItems"></div>
             </div>
 
             <div class="d-grid mt-4">
@@ -117,6 +162,45 @@
         rateInput.addEventListener('input', updateTotal);
         qtyInput.addEventListener('input', updateTotal);
     });
+
+    const cartItems = [];
+
+    function addToCart() {
+        const product = document.getElementById('productName');
+        const price = parseFloat(document.getElementById('productPrice').value);
+        const qty = parseInt(document.getElementById('productQuantity').value);
+        const total = price * qty;
+
+        if (!product.value || !price || !qty) {
+            alert("Please select a product and enter valid price & quantity.");
+            return;
+        }
+
+        const item = {
+            name: product.value,
+            price: price,
+            quantity: qty,
+            total: total
+        };
+
+        cartItems.push(item);
+        renderCart();
+    }
+
+    function renderCart() {
+        const container = document.getElementById('cartItems');
+        container.innerHTML = "";
+
+        cartItems.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = "cart-item";
+            div.innerHTML = `
+                <div>${index + 1}. 🛍️ <strong>${item.name}</strong></div>
+                <div>💰 ₹${item.price} × ${item.quantity} = <span style="color: #28a745;">₹${item.total.toFixed(2)}</span></div>
+            `;
+            container.appendChild(div);
+        });
+    }
 </script>
 </body>
 </html>

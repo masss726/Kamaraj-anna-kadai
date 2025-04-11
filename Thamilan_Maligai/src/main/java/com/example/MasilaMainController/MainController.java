@@ -1,6 +1,7 @@
 package com.example.MasilaMainController;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,12 +30,30 @@ public class MainController {
     }
 
     @GetMapping("/Purchasing")
-    public String PurchasingPage() {
+    public String PurchasingPage(Model model) {
+    	try {
+            List<addProduct> products = (List<addProduct>) repo.findAll();
+            System.out.println("Fetched products: " + products);
+            model.addAttribute("products", products);
+        } catch (Exception e) {
+            System.err.println("Error fetching products: " + e.getMessage());
+            e.printStackTrace(); // helpful during development
+        }
+
         return "Product_Selection";
     }
 
     @PostMapping("/Purchasing")
-    public String PurchasingPagePost() {
+    public String showProductSelectionPage(Model model) {
+        try {
+            List<addProduct> products = (List<addProduct>) repo.findAll();
+            System.out.println("Fetched products: " + products);
+            model.addAttribute("products", products);
+        } catch (Exception e) {
+            System.err.println("Error fetching products: " + e.getMessage());
+            e.printStackTrace(); // helpful during development
+        }
+
         return "Product_Selection";
     }
 
@@ -47,27 +66,26 @@ public class MainController {
     public String addProducts() {
         return "addProducts";
     }
-
+    	//finished
     @PostMapping("/addingProducts")
-    public String addingProducts(HttpServletRequest req, Model m) {
-    	
+    public String addingProducts(HttpServletRequest req, Model m) {    	
         String P_Name = req.getParameter("ProductName");
         int P_Price = Integer.parseInt(req.getParameter("price"));
         int P_Quantity = Integer.parseInt(req.getParameter("productQty"));
-        System.out.println("name :" + P_Name + ", Price :" + P_Price + " , Quantity :" + P_Quantity);
-        
+        System.out.println("name :" + P_Name + ", Price :" + P_Price + " , Quantity :" + P_Quantity);       
         ap.setProductName(P_Name);
         ap.setPrice(P_Price);
         ap.setProductQty(P_Quantity);
-
         repo.save(ap);  // This will now work correctly
         ap = new addProduct();
-
         return "addSuccess";
     }
 
     @GetMapping("/productList")
-    public String productList() {
+    public String productList(Model m) {
+    List<addProduct> se=(List<addProduct>)repo.findAll();
+    System.out.println(se);
+    m.addAttribute("products", se); 
         return "ProductList";
     }
 }
