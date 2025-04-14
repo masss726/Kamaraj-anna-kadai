@@ -1,6 +1,7 @@
 package com.example.MasilaMainController;
 
-import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.model.addProduct;
+import com.example.model.purchasingDetailes;
 import com.example.repository.addProductRepo;
+import com.example.repository.purchaseProductsRepo;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -23,10 +26,19 @@ public class MainController {
 	 addProduct ap = new addProduct();
 	@Autowired
     addProductRepo repo;  
+	@Autowired
+	purchaseProductsRepo PRepo;
+	
+	purchasingDetailes purchase=new purchasingDetailes();
 
     @GetMapping("/index")
     public String home() {
         return "home";
+    }
+    
+    @GetMapping("/billHistory")
+    public String billHistory(Model M) {
+    	return "purchaseHistory";
     }
 
     @GetMapping("/Purchasing")
@@ -53,13 +65,41 @@ public class MainController {
             System.err.println("Error fetching products: " + e.getMessage());
             e.printStackTrace(); // helpful during development
         }
-
+    
         return "Product_Selection";
     }
-
+    
+    //Allmost finished
     @PostMapping("/GoBilling")
-    public String GoBilling() {
-        return "billing";
+    public String GoBilling(HttpServletRequest req) {
+        
+        String costomerName =req.getParameter("customerName");
+    	if(costomerName!=null) {
+    		 String Mobile=req.getParameter("customerMobile");
+    	        String Items=req.getParameter("cartItems");
+    	        //***************************************************
+    	        String[] array = Items.split("}");
+    	        int ite=array.length-1;
+    	        int i;
+    	        for(i=0;i<=ite;i++) {
+    	        	System.out.println(array[i]);
+    	        } 	        																																			        
+    	        LocalDate currentDate = LocalDate.now();
+    	        LocalTime currentTime = LocalTime.now();
+    	        String a=":";
+    	        String array1 = array[1].replace(a, "|");
+    	        System.out.println("Cart Items Length :"+array1);
+    	        purchase.setCostomerName(costomerName);
+    	        purchase.setMobile(Mobile);
+    	        purchase.setProducts(array);
+    	        purchase.setDate(currentDate);
+    	        purchase.setTime(currentTime);
+    	        purchase.setTotalPrice("1000");
+    	        PRepo.save(purchase);
+    	        purchase =new purchasingDetailes();
+    	}
+       
+        return "Product_Selection";
     }
 
     @GetMapping("/addProducts")

@@ -10,14 +10,12 @@
             background: linear-gradient(to right, #e3f2fd, #ffffff);
             font-family: 'Comic Sans MS', cursive;
         }
-
         .billing-card {
             border-radius: 1.2rem;
             background-color: #ffffff;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
             padding: 2rem;
         }
-
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -25,59 +23,32 @@
             margin-bottom: 2rem;
             flex-wrap: wrap;
         }
-
         .btn-add-product {
             background-color: #ff7043;
             color: white;
         }
-
         .btn-add-product:hover {
             background-color: #f4511e;
         }
-
         label {
             font-weight: bold;
         }
-
         .form-control:focus {
             box-shadow: 0 0 0 0.2rem rgba(21, 101, 192, 0.25);
         }
-
         .cart-table {
             margin-top: 20px;
             font-weight: bold;
             font-size: 16px;
         }
-
         .cart-table th {
             background-color: #1565c0;
             color: white;
         }
-
         .final-total {
             font-size: 18px;
             font-weight: bold;
             color: #2c3e50;
-        }
-
-        @media (max-width: 576px) {
-            .top-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .top-bar h3 {
-                text-align: center;
-                margin-bottom: 10px;
-            }
-
-            .cart-table {
-                font-size: 14px;
-            }
-
-            .final-total {
-                text-align: center;
-            }
         }
     </style>
 </head>
@@ -111,30 +82,30 @@
             <div class="row g-3 mb-4">
                 <div class="col-md-4">
                     <label for="productName" class="form-label">📦 Product Name</label>
-                    <select class="form-select product-select" id="productName" name="productName" required>
+                    <select class="form-select" id="productName">
                         <option selected disabled>-- Select Product --</option>
                         <option th:each="p : ${products}"
                                 th:value="${p.productName}"
-                                th:data-price="${p.price}"
+                                th:attr="data-price=${p.price}"
                                 th:text="${p.productName + ' - ₹' + p.price}">
                         </option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <label for="productPrice" class="form-label">💰 Price</label>
-                    <input type="number" class="form-control rate-input" id="productPrice" name="productPrice" required>
+                    <input type="number" class="form-control" id="productPrice" readonly>
                 </div>
                 <div class="col-md-2">
                     <label for="productQuantity" class="form-label">🔢 Quantity</label>
-                    <input type="number" class="form-control quantity-input" id="productQuantity" name="productQuantity" required>
+                    <input type="number" class="form-control" id="productQuantity">
                 </div>
                 <div class="col-md-2">
                     <label for="totalPrice" class="form-label">🧮 Total</label>
-                    <input type="text" class="form-control total-input" id="totalPrice" name="totalPrice" readonly>
+                    <input type="text" class="form-control" id="totalPrice" readonly>
                 </div>
                 <div class="col-md-2 d-grid">
                     <label class="form-label invisible">Add</label>
-                    <button type="button" class="btn btn-primary" onclick="addToCart()">🛒 Add to Cart</button>
+                    <button type="button" class="btn btn-primary" onclick="addToCart()">🛒 Add</button>
                 </div>
             </div>
 
@@ -164,10 +135,17 @@
                 </div>
             </div>
 
+            <!-- Hidden Cart Items -->
+            <input type="hidden" name="cartItems" id="cartItems">
+
             <div class="d-grid mt-4">
                 <button type="submit" class="btn btn-success btn-lg">✅ Generate Bill</button>
             </div>
         </form>
+
+        <a href="/billHistory" class="d-grid mt-3">
+            <button type="button" class="btn btn-secondary">📝 History</button>
+        </a>
     </div>
 </div>
 
@@ -175,9 +153,9 @@
     const cart = [];
 
     function updateTotal() {
-        const rate = parseFloat(document.getElementById('productPrice').value) || 0;
-        const qty = parseInt(document.getElementById('productQuantity').value) || 0;
-        document.getElementById('totalPrice').value = (rate * qty).toFixed(2);
+        const price = parseFloat(document.getElementById('productPrice').value) || 0;
+        const quantity = parseInt(document.getElementById('productQuantity').value) || 0;
+        document.getElementById('totalPrice').value = (price * quantity).toFixed(2);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -186,8 +164,10 @@
         const qtyInput = document.getElementById('productQuantity');
         const searchBox = document.getElementById('searchBox');
 
+        // Product price autofill
         productSelect.addEventListener('change', function () {
-            const price = this.options[this.selectedIndex].getAttribute('data-price');
+            const selectedOption = this.options[this.selectedIndex];
+            const price = selectedOption.getAttribute('data-price');
             if (price) {
                 priceInput.value = price;
                 updateTotal();
@@ -197,19 +177,25 @@
         priceInput.addEventListener('input', updateTotal);
         qtyInput.addEventListener('input', updateTotal);
 
-        // Search filter
+        // Product search filter
         searchBox.addEventListener('input', function () {
             const filter = this.value.toLowerCase();
             const options = productSelect.querySelectorAll('option');
             options.forEach(option => {
                 const text = option.textContent.toLowerCase();
-                option.style.display = text.includes(filter) ? '' : 'none';
+                option.style.display = text.includes(filter) || option.value === "" ? '' : 'none';
             });
+        });
+
+        // Form submit cart JSON
+        document.querySelector('form').addEventListener('submit', function () {
+            document.getElementById('cartItems').value = JSON.stringify(cart);
         });
     });
 
     function addToCart() {
-        const name = document.getElementById('productName').value;
+        const productSelect = document.getElementById('productName');
+        const name = productSelect.value;
         const price = parseFloat(document.getElementById('productPrice').value);
         const quantity = parseInt(document.getElementById('productQuantity').value);
         const total = price * quantity;
@@ -222,8 +208,8 @@
         cart.push({ name, price, quantity, total });
         renderCart();
 
-        // Reset input fields
-        document.getElementById('productName').value = '';
+        // Reset inputs
+        productSelect.value = '';
         document.getElementById('productPrice').value = '';
         document.getElementById('productQuantity').value = '';
         document.getElementById('totalPrice').value = '';
