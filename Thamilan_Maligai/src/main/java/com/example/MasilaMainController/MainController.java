@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.example.model.Products;
 import com.example.model.addProduct;
 import com.example.model.purchasingDetailes;
 import com.example.repository.addProductRepo;
@@ -38,6 +39,10 @@ public class MainController {
     
     @GetMapping("/billHistory")
     public String billHistory(Model M) {
+    	
+    	List<purchasingDetailes> history=PRepo.findAll();
+    	System.out.println(history);
+    	M.addAttribute("history", history);
     	return "purchaseHistory";
     }
 
@@ -71,34 +76,47 @@ public class MainController {
     
     //Allmost finished
     @PostMapping("/GoBilling")
-    public String GoBilling(HttpServletRequest req) {
+    public String GoBilling(HttpServletRequest req,Model m) {
         
         String costomerName =req.getParameter("customerName");
     	if(costomerName!=null) {
     		 String Mobile=req.getParameter("customerMobile");
     	        String Items=req.getParameter("cartItems");
     	        //***************************************************
-    	        String[] array = Items.split("}");
+    	      //total price calculating
+    	        System.out.println("\n ************************** \n");
+    	        
+    	        String[] array = Items.split("total:");
     	        int ite=array.length-1;
     	        int i;
     	        for(i=0;i<=ite;i++) {
-    	        	System.out.println(array[i]);
+    	        	System.out.println("items price :"+array[i]);
     	        } 	        																																			        
+    	        
+    	        String a=":";
+    	        String array1 = array[0].replace(a, "|");
+    	        System.out.println("Cart Items Length :"+array1);
+    	        
+    	        
+    	        
+    	        System.out.println("\n ************************** \n");
+    	        
     	        LocalDate currentDate = LocalDate.now();
     	        LocalTime currentTime = LocalTime.now();
-    	        String a=":";
-    	        String array1 = array[1].replace(a, "|");
-    	        System.out.println("Cart Items Length :"+array1);
     	        purchase.setCostomerName(costomerName);
     	        purchase.setMobile(Mobile);
     	        purchase.setProducts(array);
     	        purchase.setDate(currentDate);
     	        purchase.setTime(currentTime);
+    
+    	        //total price calculating
     	        purchase.setTotalPrice("1000");
     	        PRepo.save(purchase);
     	        purchase =new purchasingDetailes();
     	}
-       
+    	//new option
+    	List<addProduct> products = repo.findAll();
+        m.addAttribute("products", products);        
         return "Product_Selection";
     }
 

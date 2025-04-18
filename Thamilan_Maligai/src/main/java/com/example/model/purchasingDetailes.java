@@ -17,17 +17,17 @@ public class purchasingDetailes implements Serializable{
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Long id;
 	private String costomerName;
 	private String mobile;
 	private String[] products;
 	private String totalPrice;
 	private LocalDate date;
 	private LocalTime time;
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public String getCostomerName() {
@@ -67,7 +67,7 @@ public class purchasingDetailes implements Serializable{
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public purchasingDetailes(int id, String costomerName, String mobile, String[] products, String totalPrice,
+	public purchasingDetailes(long id, String costomerName, String mobile, String[] products, String totalPrice,
 			LocalDate date, LocalTime time) {
 		super();
 		this.id = id;
