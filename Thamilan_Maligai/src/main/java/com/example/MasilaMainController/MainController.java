@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.example.MasilaMainMethods.WhatsappSender;
 import com.example.model.Products;
 import com.example.model.addProduct;
 import com.example.model.purchasingDetailes;
@@ -23,8 +24,8 @@ import jakarta.servlet.http.HttpServletRequest;
 @Service
 public class MainController {
 	
-	
-	 addProduct ap = new addProduct();
+	WhatsappSender sender=new WhatsappSender();
+	addProduct ap = new addProduct();
 	@Autowired
     addProductRepo repo;  
 	@Autowired
@@ -123,6 +124,15 @@ public class MainController {
     	        purchase.setTotalPrice(str);
     	        PRepo.save(purchase);
     	        purchase =new purchasingDetailes();
+    	        
+    	        try {
+					sender.sendMessage("917708838008", "hi this is masila");
+					System.out.println("Sended");
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					System.out.println("problem for Whatspp message sender");
+				}
     	}
     	//new option
     	List<addProduct> products = repo.findAll();
