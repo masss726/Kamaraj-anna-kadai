@@ -84,33 +84,43 @@ public class MainController {
     	        String Items=req.getParameter("cartItems");
     	        //***************************************************
     	      //total price calculating
-    	        System.out.println("\n ************************** \n");
-    	        
-    	        String[] array = Items.split("total:");
+    	        System.out.println("\n Slicing************************** Step1  \n");  	        
+    	        String[] array = Items.split("}");
     	        int ite=array.length-1;
     	        int i;
     	        for(i=0;i<=ite;i++) {
     	        	System.out.println("items price :"+array[i]);
-    	        } 	        																																			        
+    	        } 
+    	        System.out.println("GetLastIndex**************************** after(:)");
     	        
     	        String a=":";
-    	        String array1 = array[0].replace(a, "|");
-    	        System.out.println("Cart Items Length :"+array1);
+    	        //total amount
+    	        int amount=0 ;
+    	        int h;
+    	        for(h=0;h<=ite-1;h++) {
+    	        	
+    	        	 int index =array[h].lastIndexOf(a);
+    	    	        String ItemAmount = array[h].substring(index);
+    	    	        String ans1= ItemAmount.replace(":", "0");
+    	    	        int ans=Integer.parseInt(ans1);
+    	    	       amount= amount+ans;
+    	    	        System.out.println("Item amount :"+ans1);
+    	        }
+    	      
+    	        System.out.println("\n ************************** Total amount is :"+amount+"\n");
     	        
-    	        
-    	        
-    	        System.out.println("\n ************************** \n");
     	        
     	        LocalDate currentDate = LocalDate.now();
     	        LocalTime currentTime = LocalTime.now();
     	        purchase.setCostomerName(costomerName);
     	        purchase.setMobile(Mobile);
-    	        purchase.setProducts(array);
+    	        purchase.setProducts(Items);
     	        purchase.setDate(currentDate);
     	        purchase.setTime(currentTime);
     
     	        //total price calculating
-    	        purchase.setTotalPrice("1000");
+    	        String str = String.valueOf(amount);
+    	        purchase.setTotalPrice(str);
     	        PRepo.save(purchase);
     	        purchase =new purchasingDetailes();
     	}

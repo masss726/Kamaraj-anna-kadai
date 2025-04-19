@@ -1,14 +1,15 @@
 package com.example.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 @Table
 @Entity
@@ -20,7 +21,9 @@ public class purchasingDetailes implements Serializable{
 	private Long id;
 	private String costomerName;
 	private String mobile;
-	private String[] products;
+	@Lob
+	@Column(columnDefinition = "LONGTEXT")
+	private String products;
 	private String totalPrice;
 	private LocalDate date;
 	private LocalTime time;
@@ -42,7 +45,7 @@ public class purchasingDetailes implements Serializable{
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
-	public String[] getProducts() {
+	public String getProducts() {
 		return products;
 	}
 	public String getTotalPrice() {
@@ -67,7 +70,7 @@ public class purchasingDetailes implements Serializable{
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public purchasingDetailes(long id, String costomerName, String mobile, String[] products, String totalPrice,
+	public purchasingDetailes(long id, String costomerName, String mobile, String products, String totalPrice,
 			LocalDate date, LocalTime time) {
 		super();
 		this.id = id;
@@ -79,7 +82,7 @@ public class purchasingDetailes implements Serializable{
 		this.time = time;
 	}
 	
-	public void setProducts(String[] array) {
+	public void setProducts(String array) {
 		this.products=array;		
 	}
 	
