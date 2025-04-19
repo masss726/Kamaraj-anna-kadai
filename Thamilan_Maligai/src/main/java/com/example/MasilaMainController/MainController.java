@@ -1,6 +1,7 @@
 package com.example.MasilaMainController;
 
 import java.time.LocalDate;
+
 import java.time.LocalTime;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.example.MasilaMainMethods.WhatsappSender;
+//import com.example.MasilaMainMethods.WhatsappSender;
 import com.example.model.Products;
 import com.example.model.addProduct;
 import com.example.model.purchasingDetailes;
@@ -24,7 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @Service
 public class MainController {
 	
-	WhatsappSender sender=new WhatsappSender();
+	//WhatsappSender sender=new WhatsappSender();
 	addProduct ap = new addProduct();
 	@Autowired
     addProductRepo repo;  
@@ -126,7 +127,7 @@ public class MainController {
     	        purchase =new purchasingDetailes();
     	        
     	        try {
-					sender.sendMessage("917708838008", "hi this is masila");
+					//sender.sendMessage("917708838008", "hi this is masila");
 					System.out.println("Sended");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
